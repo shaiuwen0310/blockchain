@@ -1,0 +1,2 @@
+1. yaml檔中的/src/gateway是docker中的路徑
+2. 不使用docker執行，直接node app.js，要將上述路徑改成host絕對路徑、增加wallet資料夾(與gateway資料夾同一層)、在app.js那一層的資料夾下執行npm install

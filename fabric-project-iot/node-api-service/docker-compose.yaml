@@ -1,0 +1,108 @@
+version: '2'
+
+networks:
+  byfn:
+
+services:
+
+  iotdata0:
+    container_name: iotdata0
+    image: iotdata:$IMAGE_TAG
+    build: ./api-service/iotdata-api
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default
+      - LOGGER_LABEL=iotdata0-api
+      - API_PORT=5005
+      - GATEWAY_FILENAME=iotNet.yaml
+    working_dir: /src/iotdata-api
+    command: ["pm2-docker", "process.yml", "--only", "iotdata"]
+    volumes:
+      - ${WALLET_PATH}:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 5005:5005
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    networks:
+      - ${NETWORK_NAME}
+
+  iotdata1:
+    container_name: iotdata1
+    image: iotdata:$IMAGE_TAG
+    build: ./api-service/iotdata-api
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default
+      - LOGGER_LABEL=iotdata1-api
+      - API_PORT=5006
+      - GATEWAY_FILENAME=iotNet.yaml
+    working_dir: /src/iotdata-api
+    command: ["pm2-docker", "process.yml", "--only", "iotdata"]
+    volumes:
+      - ${WALLET_PATH}:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 5006:5006
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    networks:
+      - ${NETWORK_NAME}
+
+  iotdata2:
+    container_name: iotdata2
+    image: iotdata:$IMAGE_TAG
+    build: ./api-service/iotdata-api
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default
+      - LOGGER_LABEL=iotdata2-api
+      - API_PORT=5007
+      - GATEWAY_FILENAME=iotNet.yaml
+    working_dir: /src/iotdata-api
+    command: ["pm2-docker", "process.yml", "--only", "iotdata"]
+    volumes:
+      - ${WALLET_PATH}:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 5007:5007
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    networks:
+      - ${NETWORK_NAME}
+
+  reverseproxy:
+    container_name: reverseproxy
+    image: reverseproxy:$IMAGE_TAG
+    build: ./nginx
+    restart: always
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default
+    # dockerfile中已經copy了，若要更新nginx.conf，需要刪除image並重包image
+    # volumes:
+    #   - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 5000:5000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "10"
+    networks:
+      - ${NETWORK_NAME}
