@@ -3,6 +3,7 @@
 ### 做法說明
 1. 將fabric所需的image及軟體下載下來，並且打包好。執行shell去做安裝。
 2. 但就只是安裝上去，fabric的應用還是要手動執行fabric-project裡面的shell。
+3. shell-amd64/中放置自動安裝的shell。
 
 ---
 
