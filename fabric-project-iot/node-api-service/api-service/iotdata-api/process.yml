@@ -1,5 +1,0 @@
-apps:
-  - script   : ./app.js
-    name     : iotdata
-    exec_mode: cluster
-    instances: 8
