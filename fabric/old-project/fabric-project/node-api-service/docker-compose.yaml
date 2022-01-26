@@ -1,0 +1,80 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  byfn:
+
+services:
+
+  scanfile:
+    container_name: scanfile
+    image: scanfile
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src/api-service/scanfile-api
+    command: ["pm2-docker", "process.yml", "--only", "scanfile"]
+    volumes:
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 4005:4005
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+    networks:
+      - ${NETWORK_NAME}
+
+  traceability:
+    container_name: traceability
+    image: traceability
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src/api-service/traceability-api
+    command: ["pm2-docker", "process.yml", "--only", "traceability"]
+    volumes:
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 4006:4006
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+    networks:
+      - ${NETWORK_NAME}
+
+  ezscanfile:
+    container_name: ezscanfile
+    image: ezscanfile
+    restart: always
+    environment:
+      - TZ=${TIME_ZONE}
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src/api-service/ezscanfile-api
+    command: ["pm2-docker", "process.yml", "--only", "ezscanfile"]
+    volumes:
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+    ports:
+      - 4007:4007
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "5"
+    networks:
+      - ${NETWORK_NAME}

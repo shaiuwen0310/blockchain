@@ -1,0 +1,83 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  wine:
+    container_name: wine
+    image: wine
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src
+    command: ["pm2-docker", "process.yml", "--only", "wine"]
+    volumes:
+      - ./api-service:/src/api-service
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+      - ./process.yml:/src/process.yml
+    ports:
+      - 4000:4000
+    networks:
+      default:
+        aliases:
+          - example
+
+  mytokens:
+    container_name: mytokens
+    image: mytokens
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src
+    command: ["pm2-docker", "process.yml", "--only", "mytokens"]
+    volumes:
+      - ./api-service:/src/api-service
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+      - ./process.yml:/src/process.yml
+    ports:
+      - 4006:4006
+    networks:
+      default:
+        aliases:
+          - example
+
+  scanfile:
+    container_name: scanfile
+    image: scanfile
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+    working_dir: /src
+    command: ["pm2-docker", "process.yml", "--only", "scanfile"]
+    volumes:
+      - ./api-service:/src/api-service
+      - ./wallet:/src/wallet
+      - ./gateway:/src/gateway
+      - ./process.yml:/src/process.yml
+    ports:
+      - 4005:4005
+    networks:
+      default:
+        aliases:
+          - example
+
+  reverseproxy:
+    container_name: reverseproxy
+    image: nginx:latest
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 4003:4003
+    networks:
+      default:
+        aliases:
+          - example

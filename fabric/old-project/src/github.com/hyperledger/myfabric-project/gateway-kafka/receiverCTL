@@ -1,0 +1,28 @@
+//iotdata.service
+
+[Unit]
+Description=receive iot's data
+
+[Service]
+Type=forking
+ExecStart=/home/tim/go/src/github.com/hyperledger/myfabric-project/iotGW/receiver/receiver
+Restart=always
+RestartSec=10
+
+
+
+
+
+
+//iotdataT.timer
+
+[Unit]
+Description=run mytimer five minutes after booting
+
+[Timer]
+OnBootSec=5min
+Unit=iotdata.service
+
+[Install]
+WantedBy=multi-user.target
+

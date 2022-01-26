@@ -1,0 +1,71 @@
+<h2>查詢會員帳號允許每次會員間交易的最大值</h2>
+<i>eg. A會員每次交易可轉給B會員最大價值為10 若DVOToken價值為5 則每次交易A會員最多可轉2個DVOToken給B會員</i><br /><br />
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputEnterid"><br />
+  <input type="text" class="input" placeholder="你的會員帳號" [(ngModel)]="inputMyaccount"><br />
+  <input type="text" class="input" placeholder="他人的會員帳號" [(ngModel)]="inputHisaccount"><br />
+  <button class="btn" (click)="allowanceMemberFunc()">確定</button>
+  <p>{{AllowancR}}</p>
+  <p>{{ErrorAllowancR}}</p>
+</div>
+
+<br />
+
+<h2>會員帳號的權証數量</h2>
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputEnteridBal"><br />
+  <input type="text" class="input" placeholder="會員帳號" [(ngModel)]="inputAccountBal"><br />
+  <button class="btn" (click)="memberBalanceOfFunc()">確定</button><br /><br />
+
+  <table>
+    <tr>
+      <th>權証</th>
+      <th>總供應量</th>
+    </tr>
+
+    <tr *ngFor="let com of BalanceR">
+        <td>{{com.key}}</td>
+        <td>{{com.value}}</td>
+    </tr>
+  
+  </table>
+</div>
+
+<br />
+
+<h2>查詢會員帳號的歷史資訊</h2>
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputEnteridHIS"><br />
+  <input type="text" class="input" placeholder="會員帳號" [(ngModel)]="inputMemberAccountHIS"><br />
+  <button class="btn" (click)="queryMemberAccountFunc()">確定</button><br />
+  <br />
+  <table>
+    <tr>
+      <th>交易編號</th>
+      <th>時間戳</th>
+      <th>是否已刪除</th>
+      <th colspan="5">內容值</th>
+    </tr>
+
+    <tr *ngFor="let his of objMemberAccountR">
+        <td>{{his.TxId}}</td>
+        <td>{{his.Timestamp}}</td>
+        <td>{{his.IsDelete}}</td>
+        <td>name: {{his.Value.membername}}</td>
+        <td>account: {{his.Value.account}}</td>
+        <!-- <td>tokens: {{his.Value.holdingtokens}}</td> -->
+        <td>state: {{his.Value.state}}</td>
+        <td>walletid: {{his.Value.walletid}}</td>
+    </tr>
+
+    <br />
+
+    <tr>
+      <th>內容值/ 持有的權証記錄</th>
+    </tr>
+    <tr *ngFor="let com of BalanceOfR">
+      <td>{{com.value}}</td>
+    </tr>
+  </table>
+</div>
+

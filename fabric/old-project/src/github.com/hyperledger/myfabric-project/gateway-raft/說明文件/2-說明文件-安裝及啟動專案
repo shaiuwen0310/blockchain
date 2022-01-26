@@ -1,0 +1,95 @@
+1. 【放置專案】
+放置專案到此路徑 ~/go/src/github.com/hyperledger/myfabric-project
+chmod -R 755 *
+
+2. 【打包api服務】
+api程式有調整，都要重包一次
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service
+確認./wallet為空，若有identity須先清空
+docker build -f snsrdata-Dockerfile -t snsrdata .
+
+3. 【啟動fabric網路】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/fabric-network/network
+./start.sh
+
+4. 【啟動api服務】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service
+./runApp.sh
+
+5. 【建立walletID】
+(建立預設id)
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/test
+vim id-testAPI.sh
+移除enrollAdmin及registerUser區塊的註解
+./id-testAPI.sh
+恢復enrollAdmin及registerUser區塊的註解
+
+6. 【產生receiver執行檔】
+receiver用來接收iot sensor的資料
+
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/receiver
+於main.go中設定外部server ip，變數名稱為otherServerIP
+
+若無gin要先安裝:
+go get -u github.com/gin-gonic/gin
+
+輸入go build產生binary檔
+
+7. 【設定systemctl timer】
+(定時開機三分鐘後啟動reciver服務)
+cd  /lib/systemd/system
+sudo vim iotdataT.timer
+
+開啟另一個terminal
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/receiver
+vim iotdataT
+將iotdataT中的內容複製到iotdataT.timer
+
+8. 【設定systemctl service】
+(timer去驅動的recive)
+cd  /lib/systemd/system
+sudo vim iotdata.service
+
+開啟另一個terminal
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/receiver
+vim iotdata
+將iotdata中的內容複製到iotdata.service
+ExecStart填寫~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/receiver/receiver的絕對路徑
+
+9. 【啟用systemctl服務】
+cd  /lib/systemd/system
+systemctl daemon-reload
+
+列舉已經存在設定檔對應的服務狀態清單
+systemctl list-unit-files | grep iotdataT
+
+設定重開機會自動重啟定時服務
+systemctl enable iotdataT.timer
+
+10. 【調整路徑】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/fabric-network/network
+vim restart.sh
+將cd的路徑改成~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/fabric-network/network的絕對路徑
+
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service
+vim restartApp.sh
+將cd的路徑改成~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service的絕對路徑
+
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft
+vim autoRestart.sh
+調整restart.sh及restartApp.sh的絕對路徑
+
+11. 【設定開機自動執行fabric】
+sudo vim /etc/rc.local
+在/etc/rc.local設定執行autoRestart.sh指令 如下
+sh ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/autoRestart.sh
+將上述路徑改成絕對路徑
+
+附註. 若無/etc/rc.local，可參考https://www.itread01.com/content/1537549089.html
+
+12. 【重開機】
+重開機後三分鐘即可開始接收iot sensor傳送的資料
+
+13. 【檢查是否正常執行】
+確認可接收iot sensor資料: journalctl -u iotdata.service
+確認docker執行正常: 查看docker logs

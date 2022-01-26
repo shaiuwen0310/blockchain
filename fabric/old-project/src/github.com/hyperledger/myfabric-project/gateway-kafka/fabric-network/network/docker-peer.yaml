@@ -1,0 +1,58 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  peer0.org1.example.com:
+    container_name: peer0.org1.example.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_default 
+      - FABRIC_LOGGING_SPEC=info
+      - CORE_CHAINCODE_LOGGING_LEVEL=info
+      # 不知用途
+      - CORE_PEER_PROFILE_ENABLED=true
+      # peer模組的組織ID 在configtx.yaml中指定
+      - CORE_PEER_LOCALMSPID=Org1MSP
+      # peer模組msp文件路徑 對區塊鏈進行操作時使用(包含ca自簽根憑證、peer的憑證及私鑰、TLS的CA)
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer
+      # 訪問地址
+      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
+      # ID必須唯一且小寫
+      - CORE_PEER_ID=peer0.org1.example.com
+      # 自動選出leader peer 而非直接指定
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      # 若是自動選出leader peer 則一定要false
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      # 組織內部散佈消息，需要跟其他peer連接
+      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:8051
+      # 若要讓其他組織知道敝組織的消息，需要設定自己
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
+      # chaincode用來連結peer時的地址
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.example.com:7052
+      # peer監聽chaincode的地址
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      # 不使用TLS 也有CORE_PEER_TLS_CLIENTAUTHREQUIRED
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/msp/peer
+      # 用戶憑證 默認有Admin和User1
+      - ./crypto-config/peerOrganizations/org1.example.com/users:/etc/hyperledger/msp/users
+      - ./channel-artifacts:/etc/hyperledger/configtx
+    ports:
+      - 7051:7051
+    networks:
+      default:
+        aliases:
+          - example

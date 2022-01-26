@@ -1,0 +1,12 @@
+FROM node:9.0.0
+
+RUN npm install pm2 -g \
+    && mkdir -p /src/api-service/scanfile-api \
+    && mkdir -p /src/wallet \
+    && mkdir -p /src/gateway
+
+WORKDIR  /src
+COPY /api-service/scanfile-api /src/api-service/scanfile-api
+COPY /wallet /src/wallet
+COPY /gateway /src/gateway
+COPY process.yml /src

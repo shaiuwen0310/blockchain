@@ -1,0 +1,40 @@
+<h2>權証帳號與會員帳號之間互轉權証</h2>
+<i>最後一欄填寫轉出帳號</i><br /><br />
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputWalletid"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokenname"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputTokenaccount"><br />
+  <input type="text" class="input" placeholder="會員帳號" [(ngModel)]="inputMemberaccount"><br />
+  <input type="text" class="input" placeholder="權証移轉數量" [(ngModel)]="inputCounts"><br />
+  <input type="text" class="input" placeholder="轉出方帳號" [(ngModel)]="inputWho"><br />
+  <button class="btn" (click)="coinbaseAndMbrTxnFunc()">確定</button>
+  <p>{{CoinbaseAndMbrR}}</p>
+</div>
+
+<br /><br />
+
+<h2>會員帳號之間轉權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputWalletidINT"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokennameINT"><br />
+  <input type="text" class="input" placeholder="轉出方帳號" [(ngModel)]="memberFromaccountsINT"><br />
+  <input type="text" class="input" placeholder="轉入方帳號" [(ngModel)]="memberToaccountsINT"><br />
+  <input type="text" class="input" placeholder="權証移轉數量" [(ngModel)]="inputCountssINT"><br />
+  <button class="btn" (click)="InterMemberTxnFunc()">確定</button>
+  <p>{{InterMemberR}}</p>
+</div>
+
+<br /><br />
+
+<h2>會員持有的權証換成其他類型的權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputwalletid"><br />
+  <input type="text" class="input" placeholder="你的會員帳號" [(ngModel)]="inputmemberacc"><br />
+  <input type="text" class="input" placeholder="你擁有的權証名稱" [(ngModel)]="inputholdingtoken"><br />
+  <input type="text" class="input" placeholder="你擁有的權証帳號" [(ngModel)]="inputholdingtokenacc"><br />
+  <input type="text" class="input" placeholder="要交換的已擁有權証數量" [(ngModel)]="inputholdingtokennumber"><br />
+  <input type="text" class="input" placeholder="你想交換的權証名稱" [(ngModel)]="inputexchangetoken"><br />
+  <input type="text" class="input" placeholder="你想交換的權証帳號" [(ngModel)]="inputexchangetokenacc"><br />
+  <button class="btn" (click)="TokenExchangeTxnFunc()">確定</button>
+  <p>{{TokenExchangeR}}</p>
+</div>

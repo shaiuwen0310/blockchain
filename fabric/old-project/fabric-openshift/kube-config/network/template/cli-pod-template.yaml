@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cli-pod
+  labels:
+    role: cli
+spec:
+  serviceAccountName: OP_ACCOUNT
+  volumes:
+  - name: cli-volume
+    persistentVolumeClaim:
+      claimName: shareclaim
+  - name: dockersocket
+    hostPath:
+      path: /var/run/docker.sock
+  containers:
+  - name: cli
+    image: hyperledger/fabric-tools:1.4.4
+    env:
+    - name: TZ
+      value: 'TIMEZONE'
+    - name: GOPATH
+      value: '/opt/gopath'
+    - name: CORE_VM_ENDPOINT
+      value: 'unix:///host/var/run/docker.sock'
+    - name: FABRIC_LOGGING_SPEC
+      value: 'debug'
+    - name: CORE_PEER_ID
+      value: 'cli'
+    - name: CORE_PEER_ADDRESS
+      value: 'PEER0_NAME:7051'
+    - name: CORE_PEER_LOCALMSPID
+      value: 'Org1MSP'
+    - name: CORE_PEER_TLS_ENABLED
+      value: 'true'
+    - name: CORE_PEER_TLS_CERT_FILE
+      value: '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.crt'
+    - name: CORE_PEER_TLS_KEY_FILE
+      value: '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.key'
+    - name: CORE_PEER_TLS_ROOTCERT_FILE
+      value: '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt'
+    - name: CORE_PEER_MSPCONFIGPATH
+      value: '/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp'
+    workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: ["/bin/bash", "-c", "--"]
+    args: ["while true; do sleep 30; done;"]
+    volumeMounts:
+     - mountPath: /opt/gopath/src/github.com/chaincode
+       name: cli-volume
+       subPath: ./chaincode
+     - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+       name: cli-volume
+       subPath: ./crypto-config
+     - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+       name: cli-volume
+       subPath: ./scripts
+     - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+       name: cli-volume
+       subPath: ./channel-artifacts
+     - mountPath: /host/var/run/docker.sock
+       name: dockersocket

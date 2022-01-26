@@ -1,0 +1,6 @@
+FROM node:8.16.0
+
+WORKDIR /src/api-service/scanfile-api
+COPY /api-service/scanfile-api /src/api-service/scanfile-api
+RUN npm install --production \
+	&& npm install pm2 -g --no-optional --production

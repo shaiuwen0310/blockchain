@@ -1,0 +1,12 @@
+[Unit]
+Description=other server
+
+[Service]
+Type=simple
+WorkingDirectory=/root/go/src/iotRcvrE/other-server/
+ExecStart=/root/go/src/iotRcvrE/other-server/other-server
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

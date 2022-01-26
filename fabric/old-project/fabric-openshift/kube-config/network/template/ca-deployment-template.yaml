@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: ca0-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: ca0
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: backupclaim
+      - name: ca0-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      containers:
+      - name: ca0
+        image: hyperledger/fabric-ca:1.4.4
+        env:
+        - name: TZ
+          value: 'TIMEZONE'
+        - name: FABRIC_CA_HOME
+          value: '/etc/hyperledger/fabric-ca-server'
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: 'CA0_HOST'
+        - name: FABRIC_CA_SERVER_TLS_ENABLED
+          value: 'true'
+        - name: FABRIC_CA_SERVER_TLS_CERTFILE
+          value: '/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem'
+        - name: FABRIC_CA_SERVER_TLS_KEYFILE
+          value: '/etc/hyperledger/fabric-ca-server-config/BYFN_CA1_PRIVATE_KEY'
+        - name: FABRIC_CA_SERVER_PORT
+          value: '7054'
+        - name: CA_ACCOUNT
+          valueFrom:
+            secretKeyRef:
+              name: fabric-secret
+              key: caaccount
+        - name: CA_PWD
+          valueFrom:
+            secretKeyRef:
+              name: fabric-secret
+              key: capwd
+        command: ["sh"]
+        args: ["-c", "sleep 6; /scripts/startca.sh"]
+        ports:
+        - containerPort: 7054
+        volumeMounts:
+        - mountPath: /etc/hyperledger
+          name: backup
+          subPath: ./ca0
+        - mountPath: /etc/hyperledger/fabric-ca-server-config
+          name: ca0-pvc
+          subPath: ./crypto-config/peerOrganizations/org1.example.com/ca
+        - mountPath: /scripts/startca.sh
+          name: ca0-pvc
+          subPath: ./scripts/startca.sh

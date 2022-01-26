@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: genid-pod
+  labels:
+    role: genid
+spec:
+  serviceAccountName: OP_ACCOUNT
+  restartPolicy: "Never"
+  volumes:
+  - name: genid-pvc
+    persistentVolumeClaim:
+      claimName: shareclaim
+  containers:
+  - name: walletid
+    image: hyperledger/fabric-tools:1.4.4
+    workingDir: NFS_SHARE_PATH
+    env:
+    - name: NFS_WALLET_PATH
+      value: "NFS_SHARE_PATH"
+    - name: SERVICES_IP
+      value: "SERVICE_IP"
+    - name: SERVICES_PORT
+      value: "SERVICE_PORT"
+    - name: CHAINCODE
+      value: "CHAINCODES"
+    - name: CA_ACCOUNT
+      valueFrom:
+        secretKeyRef:
+          name: fabric-secret
+          key: caaccount
+    - name: CA_PWD
+      valueFrom:
+        secretKeyRef:
+          name: fabric-secret
+          key: capwd
+    - name: WALLET_USER
+      valueFrom:
+        secretKeyRef:
+          name: fabric-secret
+          key: walletuser
+    volumeMounts:
+     - mountPath: NFS_SHARE_PATH
+       name: genid-pvc
+       subPath: ./scripts
+    command: ["/bin/bash", "-c", "--"]
+    args: ["./genId.sh"]

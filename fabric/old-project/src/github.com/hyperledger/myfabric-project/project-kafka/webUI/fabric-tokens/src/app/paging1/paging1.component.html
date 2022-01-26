@@ -1,0 +1,45 @@
+<h2>建立新權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputEnterid"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokenname"><br />
+  <input type="text" class="input" placeholder="權証簡稱" [(ngModel)]="inputSymbol"><br />
+  <input type="text" class="input" placeholder="權証價值" [(ngModel)]="inputValue"><br />
+  <input type="text" class="input" placeholder="權証總供應量" [(ngModel)]="inputTotal"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputAccount"><br />
+  <input type="text" class="input" placeholder="權証之公司名稱" [(ngModel)]="inputCorporation"><br />
+  <button class="btn" (click)="newTokenFunc()">確定</button>
+  <p>{{newTokenR}}</p>
+</div>
+
+<br />
+
+<h2>啟用權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputEnteridACT"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokennameACT"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputAccountACT"><br />
+  <button class="btn" (click)="activateTokenFunc()">確定</button>
+  <p>{{activateTokenR}}</p>
+</div>
+
+<br />
+
+<h2>凍結權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputEnteridFRZ"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokennameFRZ"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputAccountFRZ"><br />
+  <button class="btn" (click)="freezenTokenFunc()">確定</button>
+  <p>{{freezenTokenR}}</p>
+</div>
+
+<br />
+
+<h2>刪除權証</h2>
+<div>
+  <input type="text" class="input" placeholder="錢包ID" [(ngModel)]="inputEnteridDEL"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputTokennameDEL"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputAccountDEL"><br />
+  <button class="btn" (click)="deleteTokenFunc()">確定</button>
+  <p>{{deleteTokenR}}</p>
+</div>

@@ -1,0 +1,68 @@
+<h2>查詢權証資訊</h2>
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputenteridINFO"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputtokennameINFO"><br />
+  <button class="btn" (click)="queryTokenInfoFunc()">確定</button>
+</div>
+<br />
+<table>
+  <tr>
+    <th>公司名稱</th>
+    <th>權証名稱</th>
+    <th>狀態</th>
+    <th>總供應量</th>
+    <th>權証代號</th>
+    <th>價值</th>
+    <th>操作者錢包ID</th>
+  </tr>
+
+  <tr>
+    <td>{{objTokenInfo?.corporation}}</td>
+    <td>{{objTokenInfo?.name}}</td>
+    <td>{{objTokenInfo?.state}}</td>
+    <td>{{objTokenInfo?.supplytotal}}</td>
+    <td>{{objTokenInfo?.symbol}}</td>
+    <td>{{objTokenInfo?.value}}</td>
+    <td>{{objTokenInfo?.walletid}}</td>
+  </tr>
+</table>
+
+<br /><br /><br />
+
+<h2>查詢權証的總供應量</h2>
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputenteridSUP"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputtokennameSUP"><br />
+  <button class="btn" (click)="queryTokenSupplyFunc()">確定</button><br />
+  <p>{{tokenSupplyR?.result}}</p>
+</div>
+
+<br /><br /><br />
+
+<h2>查詢權証帳號的歷史資訊</h2>
+<div>
+  <input type="text" class="input" placeholder="你的錢包ID" [(ngModel)]="inputenteridHIS"><br />
+  <input type="text" class="input" placeholder="權証名稱" [(ngModel)]="inputtokennameHIS"><br />
+  <input type="text" class="input" placeholder="權証帳號" [(ngModel)]="inputtokenaccountHIS"><br />
+  <button class="btn" (click)="queryTokenAccountFunc()">確定</button><br />
+  <br />
+  <table>
+    <tr>
+      <th>交易編號</th>
+      <th>時間戳</th>
+      <th>是否已刪除</th>
+      <th colspan="5">內容值</th>
+    </tr>
+
+    <tr *ngFor="let his of objtokenAccountR">
+        <td>{{his.TxId}}</td>
+        <td>{{his.Timestamp}}</td>
+        <td>{{his.IsDelete}}</td>
+        <td>權証名稱: {{his.Value.tokenname}}</td>
+        <td>權証帳號: {{his.Value.account}}</td>
+        <td>權証餘額: {{his.Value.balance}}</td>
+        <td>權証狀態: {{his.Value.state}}</td>
+        <td>操作者錢包ID: {{his.Value.walletid}}</td>
+    </tr>
+  </table>
+</div>

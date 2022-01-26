@@ -1,0 +1,128 @@
+#  1 ca, 2 peers, 5 orderer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: CA0_NAME
+  labels:
+    run: ca0
+spec:
+  clusterIP: CA0_SVC_IP
+  selector:
+    role: ca0
+  ports:
+  - protocol: TCP
+    port: 7054
+    targetPort: 7054
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: PEER0_NAME
+  labels:
+    run: peer0org1
+spec:
+  clusterIP: PEER0_SVC_IP
+  selector:
+    role: peer0org1
+  ports:
+  - protocol: TCP
+    port: 7051
+    targetPort: 7051
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: PEER1_NAME
+  labels:
+    run: peer1org1
+spec:
+  clusterIP: PEER1_SVC_IP
+  selector:
+    role: peer1org1
+  ports:
+  - protocol: TCP
+    port: 8051
+    targetPort: 7051
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ORDERER_NAME
+  labels:
+    run: orderer
+spec:
+  clusterIP: ORDERER_SVC_IP
+  selector:
+    role: orderer
+  ports:
+  - protocol: TCP
+    port: 7050
+    targetPort: 7050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ORDERER2_NAME
+  labels:
+    run: orderer2
+spec:
+  clusterIP: ORDERER2_SVC_IP
+  selector:
+    role: orderer2
+  ports:
+  - protocol: TCP
+    port: 8050
+    targetPort: 7050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ORDERER3_NAME
+  labels:
+    run: orderer3
+spec:
+  clusterIP: ORDERER3_SVC_IP
+  selector:
+    role: orderer3
+  ports:
+  - protocol: TCP
+    port: 9050
+    targetPort: 7050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ORDERER4_NAME
+  labels:
+    run: orderer4
+spec:
+  clusterIP: ORDERER4_SVC_IP
+  selector:
+    role: orderer4
+  ports:
+  - protocol: TCP
+    port: 10050
+    targetPort: 7050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ORDERER5_NAME
+  labels:
+    run: orderer5
+spec:
+  clusterIP: ORDERER5_SVC_IP
+  selector:
+    role: orderer5
+  ports:
+  - protocol: TCP
+    port: 11050
+    targetPort: 7050

@@ -1,0 +1,118 @@
+
+查看scanfile-testAPI.sh，會有五個url，各代表五個與區塊鏈互動的功能
+
+1. 塞資料給區塊鏈
+查看scanfile-testAPI.sh中的setImageHash
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值set)、
+values(想儲存的欄位)，values中的hash為檔案hash值，filename為檔案名稱
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"Serialnumber":"1","TheLast7":"9c3354a","errcode":0,"isOk":true,"txid":"6141992af98771327f5c378173cdbe35dcdb7763af94668c25b9fa0639c3354a"}
+失敗: {"Serialnumber":null,"errcode":13,"isOk":false,"txid":null,"TheLast7":null}
+欄位說明: Serialnumber為流水號、errcode為錯誤代碼、isOk表示成功失敗、txid為區塊鏈產生的交易代號、TheLast7為txid後七碼
+
+
+2. txid驗證檔案是否已記錄於區塊鏈中
+查看scanfile-testAPI.sh中的checkByTxid
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值vtxid)、
+values(想儲存的欄位)，values中的txid為區塊鏈產生的交易代號
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"errcode":0,"isOk":true}
+失敗: {"errcode":15,"isOk":false}
+欄位說明: errcode為錯誤代碼、isOk表示是否存在區塊鏈
+
+
+3. hash值驗證檔案是否已記錄於區塊鏈中
+查看scanfile-testAPI.sh中的checkByHash
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值vhash)、
+values(想儲存的欄位)，values中的hash為檔案hash值
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"errcode":0,"isOk":true}
+失敗: {"errcode":14,"isOk":false}
+欄位說明: errcode為錯誤代碼、isOk表示是否存在區塊鏈
+
+
+4. 流水號驗證檔案是否已記錄於區塊鏈中
+查看scanfile-testAPI.sh中的checkBySerialNum
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值vserialno)、
+values(想儲存的欄位)，values中的serialnumber為流水號
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"errcode":0,"isOk":true}
+失敗: {"errcode":15,"isOk":false}
+欄位說明: errcode為錯誤代碼、isOk表示是否存在區塊鏈
+
+
+5. 流水號驗證檔案是否已記錄於區塊鏈中
+查看scanfile-testAPI.sh中的checkBySerialNumBlockId
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值vserialnoblockid)、
+values(想儲存的欄位)，values中的serialnumber為流水號，blockid為txid末七碼
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"errcode":0,"isOk":true}
+失敗: {"errcode":15,"isOk":false}
+欄位說明: errcode為錯誤代碼、isOk表示是否存在區塊鏈
+
+
+6. 用hash值查詢歷史記錄
+查看scanfile-testAPI.sh中的getHistoryByHash
+
+前端代的參數:
+userName(錢包ID)、
+chaincodeFunction(這個功能的名稱，固定值gethistory)、
+values(想儲存的欄位)，values中的hash為檔案hash值
+(所有功能都需要userName、chaincodeFunction、values，values根據功能有不同欄位)
+
+回應訊息格式:
+成功: {"errcode":0,"isOk":true,"result":"[{\"TxId\":\"5e40fe63b727aebd644896ee3295507a0ffe5d2ff717b72a4ae91de51bb49d0e\", \"Value\":{\"title\":\"scanfile.jpg\",\"txid\":\"5e40fe63b727aebd644896ee3295507a0ffe5d2ff717b72a4ae91de51bb49d0e\"}, \"Timestamp\":\"2019-06-12 02:50:03.104 +0000 UTC\", \"IsDelete\":\"false\"}]"}
+失敗: {"errcode":0,"isOk":true,"result":"[]"}
+欄位說明: errcode為錯誤代碼、isOk表示是否存在區塊鏈、result表示查詢結果
+
+errcode meaning
+11: 參數數量不對
+12: 抓key值時有err
+13: 應該要抓不到key值，但卻有抓到key值
+14: 抓key值時內容為空
+15: 用txid查詢時，查詢內容為空
+
+
+
+
+
+
+# echo "==================registerUser=================="
+# echo
+# curl -s -X POST \
+#   http://127.0.0.1:4003/id/asdce/u/v1 \
+#   -H "content-type: application/json" \
+#   -d "{
+# 	\"values\" : {\"newuser\" : \"user1\",\"enrolled\" : \"admin\",\"affiliation\" : \"org1.department1\",\"role\" : \"client\",\"mspid\" : \"Org1MSP\"} 
+#   }"
+# echo
+# echo
+
+此功能用來建立錢包ID
+前面提到的userName就是要填寫newuser建立的名稱
+其餘欄位照填

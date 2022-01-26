@@ -1,0 +1,8 @@
+[Unit]
+Description=receive iot's data
+
+[Service]
+Type=simple
+ExecStart=/home/judy/go/src/github.com/hyperledger/myfabric-project/gateway-raft/receiver/receiver
+Restart=always
+RestartSec=10

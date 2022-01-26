@@ -1,0 +1,6 @@
+FROM node:8.16.0
+
+WORKDIR /src/api-service/traceability-api
+COPY /api-service/traceability-api /src/api-service/traceability-api
+RUN npm install --production \
+	&& npm install pm2 -g --no-optional --production

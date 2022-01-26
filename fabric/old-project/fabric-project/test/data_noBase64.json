@@ -1,0 +1,13 @@
+{
+    "userName":"user1",
+	"chaincodeFunction":"set",
+	"values": {
+        "productName" : "Aegis combat system",
+        "produceDate" : "20180101",
+        "operateDate" : "20190101",
+        "productQuantity" : "10000",
+        "account" : "Lockheed Martin",
+        "picHash" : "736df107b4d99cd5aa400eba7bd043755001ca8d5d47e408d33ac618765ebe1d",
+        "imgName" : "Aegis combat system_ebe1d.jpg"
+    }
+}

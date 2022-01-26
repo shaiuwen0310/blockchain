@@ -1,0 +1,95 @@
+《增加放web》
+
+1. 在master掛載nfs，並建立專案目錄，master上：
+mkdir /fabric
+showmount -e 192.168.36.130
+mount -t nfs 192.168.36.130:/home/fabric /fabric && mount | grep fabric
+
+2. 將專案上傳到nfs
+scp -r fabric-openshift/ root@192.168.36.130:/home/fabric
+
+3. 將images匯入openshift的docker中
+cd /fabric/fabric-openshift/images
+docker load --input ./scanfile.tar
+docker load --input ./ezscanfile.tar
+docker load --input ./traceability.tar
+docker load --input ./ezscanfilewebui.tar
+docker load --input ./traceabilitywebui.tar
+
+4. 將image匯入ofenshit的images stream
+oc login -u dev
+docker login -u $(oc whoami) -p $(oc whoami -t) docker-registry.default.svc:5000
+docker tag scanfile docker-registry.default.svc:5000/project1/scanfile
+docker tag ezscanfile docker-registry.default.svc:5000/project1/ezscanfile
+docker tag ezscanfilewebui docker-registry.default.svc:5000/project1/ezscanfilewebui
+docker tag traceability docker-registry.default.svc:5000/project1/traceability
+docker tag traceabilitywebui docker-registry.default.svc:5000/project1/traceabilitywebui
+docker push docker-registry.default.svc:5000/project1/scanfile
+docker push docker-registry.default.svc:5000/project1/ezscanfile
+docker push docker-registry.default.svc:5000/project1/ezscanfilewebui
+docker push docker-registry.default.svc:5000/project1/traceability
+docker push docker-registry.default.svc:5000/project1/traceabilitywebui
+oc get is
+scanfile.yaml的images換成oc get is顯示的DOCKER REPO欄位
+
+6. 用root建立pv
+cd /fabric/fabric-openshift/kube-config/network
+oc login -u system:admin && oc project project1
+oc create -f fabric-pv.yaml
+
+7. 在master執shell
+cd /fabric/fabric-openshift/kube-config/network
+oc login -u dev && oc project project1
+./setting.sh
+查看channel-artifacts/genesis.block是否正確
+./upnode.sh
+
+8. 在master上執行shell
+cd /fabric/fabric-openshift/kube-config/service-api
+./runAPI.sh
+
+9. 在master上執行shell
+cd /fabric/fabric-openshift/kube-config/web
+./runWeb.sh
+
+10. 設定網頁對外ip網卡設定
+oc patch svc ezscanfilewebui-svc -p '{"spec":{"externalIPs":["192.168.36.131"]}}'
+ip addr add 192.168.36.131 dev ens32
+
+oc patch svc traceabilitywebui-svc -p '{"spec":{"externalIPs":["192.168.36.132"]}}'
+ip addr add 192.168.36.132 dev ens32
+
+
+
+
+《於本機進行測試》
+1. 在本機設定route
+在local的etc/hosts設定master ip映射oc get route顯示的HOST/PORT
+2. 將測試腳本ip換成第一點
+
+
+《檔案權限問題》
+oc create sa devsa
+oc adm policy add-scc-to-user anyuid -z devsa
+改anyuid設定
+serviceAccountName: devsa
+master node都關閉selinux
+
+
+《使用者密碼被刪除時》
+oc get auth
+oc describe user dev
+oc edit user dev
+vi htpasswd
+htpasswd -bc htpasswd dev dev
+
+
+《清空》
+oc delete all --all
+oc delete pvc --all
+oc delete secret fabric-secret
+oc login -u system:admin
+oc delete pv --all
+cd /fabric
+rm -rf *
+刪除所有檔案

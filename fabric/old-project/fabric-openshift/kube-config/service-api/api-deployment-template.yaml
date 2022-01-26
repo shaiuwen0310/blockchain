@@ -1,0 +1,138 @@
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: scanfile-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: scanfile
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: scanfile-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+      containers:
+      - name: scanfile
+        image: docker-registry.default.svc:5000/PROJ_NAME/scanfile
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: CORE_VM_ENDPOINT
+          value: 'unix:///host/var/run/docker.sock'
+        workingDir: /src/api-service/scanfile-api
+        command: ["pm2-docker"]
+        args: ["process.yml", "--only", "scanfile"]
+        ports:
+        - containerPort: 4005
+        volumeMounts:
+        - mountPath: /src/wallet
+          name: scanfile-pvc
+          subPath: ./wallet
+        - mountPath: /src/gateway
+          name: scanfile-pvc
+          subPath: ./gateway
+        - mountPath: /src/crypto-config
+          name: scanfile-pvc
+          subPath: ./crypto-config
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: ezscanfile-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: ezscanfile
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: ezscanfile-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+      containers:
+      - name: ezscanfile
+        image: docker-registry.default.svc:5000/PROJ_NAME/ezscanfile
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: CORE_VM_ENDPOINT
+          value: 'unix:///host/var/run/docker.sock'
+        workingDir: /src/api-service/ezscanfile-api
+        command: ["pm2-docker"]
+        args: ["process.yml", "--only", "ezscanfile"]
+        ports:
+        - containerPort: 4007
+        volumeMounts:
+        - mountPath: /src/wallet
+          name: ezscanfile-pvc
+          subPath: ./wallet
+        - mountPath: /src/gateway
+          name: ezscanfile-pvc
+          subPath: ./gateway
+        - mountPath: /src/crypto-config
+          name: ezscanfile-pvc
+          subPath: ./crypto-config
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: traceability-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: traceability
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: traceability-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+      containers:
+      - name: traceability
+        image: docker-registry.default.svc:5000/PROJ_NAME/traceability
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: CORE_VM_ENDPOINT
+          value: 'unix:///host/var/run/docker.sock'
+        workingDir: /src/api-service/traceability-api
+        command: ["pm2-docker"]
+        args: ["process.yml", "--only", "traceability"]
+        ports:
+        - containerPort: 4006
+        volumeMounts:
+        - mountPath: /src/wallet
+          name: traceability-pvc
+          subPath: ./wallet
+        - mountPath: /src/gateway
+          name: traceability-pvc
+          subPath: ./gateway
+        - mountPath: /src/crypto-config
+          name: traceability-pvc
+          subPath: ./crypto-config
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+

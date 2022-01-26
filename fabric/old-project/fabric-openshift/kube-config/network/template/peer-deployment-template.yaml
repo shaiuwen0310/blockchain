@@ -1,0 +1,203 @@
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: peer0-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: peer0org1
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: backupclaim
+      - name: peer0-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+      containers:
+      - name: peer0org1
+        image: hyperledger/fabric-peer:1.4.4
+        command: ["peer"]
+        args: ["node","start"]
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: CORE_VM_ENDPOINT
+          value: 'unix:///host/var/run/docker.sock'
+        - name: FABRIC_LOGGING_SPEC
+          value: 'INFO'
+        - name: CORE_PEER_TLS_ENABLED
+          value: 'true'
+        - name: CORE_PEER_GOSSIP_USELEADERELECTION
+          value: 'true'
+        - name: CORE_PEER_GOSSIP_ORGLEADER
+          value: 'false'
+        - name: CORE_PEER_PROFILE_ENABLED
+          value: 'true'
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: '/etc/hyperledger/fabric/tls/server.crt'
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: '/etc/hyperledger/fabric/tls/server.key'
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: '/etc/hyperledger/fabric/tls/ca.crt'
+        - name: CORE_PEER_ID
+          value: 'peer0org1'
+        - name: CORE_PEER_ADDRESS
+          value: 'PEER0_NAME:7051'
+        - name: CORE_PEER_LISTENADDRESS
+          value: '0.0.0.0:7051'
+        - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+          value: 'PEER1_NAME:8051'
+        - name: CORE_PEER_LOCALMSPID
+          value: 'Org1MSP'
+        - name: CORE_PEER_ADDRESSAUTODETECT
+          value: "true"
+        - name: CORE_PEER_GOSSIP_BOOTSTRAP
+          value: "PEER1_NAME:8051"
+        - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+          value: "host"
+        - name: CORE_LEDGER_STATE_STATEDATABASE
+          value: "CouchDB"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+          value: "localhost:5984"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+          value: "dbuser"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+          value: "dbpwd"
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+        ports:
+        - containerPort: 7051
+        - containerPort: 7052
+        volumeMounts:
+        - mountPath: /var/hyperledger/production
+          name: backup
+          subPath: ./peer0
+        - mountPath: /etc/hyperledger/fabric/msp
+          name: peer0-pvc
+          subPath: ./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp
+        - mountPath: /etc/hyperledger/fabric/tls
+          name: peer0-pvc
+          subPath: ./crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+      - name: couchdb0
+        image: hyperledger/fabric-couchdb
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: COUCHDB_USER
+          value: 'dbuser'
+        - name: COUCHDB_PASSWORD
+          value: 'dbpwd'
+        ports:
+        - containerPort: 5984
+
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: peer1-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: peer1org1
+    spec:
+      serviceAccountName: OP_ACCOUNT
+      volumes:
+      - name: backup
+        persistentVolumeClaim:
+          claimName: backupclaim
+      - name: peer1-pvc
+        persistentVolumeClaim:
+          claimName: shareclaim
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+      containers:
+      - name: peer1org1
+        image: hyperledger/fabric-peer:1.4.4
+        command: ["peer"]
+        args: ["node","start"]
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: CORE_VM_ENDPOINT
+          value: 'unix:///host/var/run/docker.sock'
+        - name: FABRIC_LOGGING_SPEC
+          value: 'INFO'
+        - name: CORE_PEER_TLS_ENABLED
+          value: 'true'
+        - name: CORE_PEER_GOSSIP_USELEADERELECTION
+          value: 'true'
+        - name: CORE_PEER_GOSSIP_ORGLEADER
+          value: 'false'
+        - name: CORE_PEER_PROFILE_ENABLED
+          value: 'true'
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: '/etc/hyperledger/fabric/tls/server.crt'
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: '/etc/hyperledger/fabric/tls/server.key'
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: '/etc/hyperledger/fabric/tls/ca.crt'
+        - name: CORE_PEER_ID
+          value: 'peer1org1'
+        - name: CORE_PEER_ADDRESS
+          value: 'PEER1_NAME:8051'
+        - name: CORE_PEER_LISTENADDRESS
+          value: '0.0.0.0:7051'
+        - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+          value: 'PEER0_NAME:7051'
+        - name: CORE_PEER_LOCALMSPID
+          value: 'Org1MSP'
+        - name: CORE_PEER_ADDRESSAUTODETECT
+          value: "true"
+        - name: CORE_PEER_GOSSIP_BOOTSTRAP
+          value: "PEER0_NAME:7051"
+        - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+          value: "host"
+        - name: CORE_LEDGER_STATE_STATEDATABASE
+          value: "CouchDB"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+          value: "localhost:5984"  
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+          value: "dbuser"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+          value: "dbpwd"
+        ports:
+        - containerPort: 7051
+        - containerPort: 7052
+        volumeMounts:
+        - mountPath: /var/hyperledger/production
+          name: backup
+          subPath: ./peer1
+        - mountPath: /etc/hyperledger/fabric/msp
+          name: peer1-pvc
+          subPath: ./crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp
+        - mountPath: /etc/hyperledger/fabric/tls
+          name: peer1-pvc
+          subPath: ./crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+      - name: couchdb1
+        image: hyperledger/fabric-couchdb
+        env:
+        - name: TZ
+          value: TIMEZONE
+        - name: COUCHDB_USER
+          value: 'dbuser'
+        - name: COUCHDB_PASSWORD
+          value: 'dbpwd'
+        ports:
+        - containerPort: 5984
+

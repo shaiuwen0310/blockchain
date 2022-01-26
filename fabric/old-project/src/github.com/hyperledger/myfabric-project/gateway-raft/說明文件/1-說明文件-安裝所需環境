@@ -1,0 +1,79 @@
+1. 【將OS換成ubuntu mate 18.04】
+
+2. 【安裝vim】
+sudo apt-get install vim
+
+3. 【安裝go】
+cd /tmp
+wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
+tar -xvzf go1.11.5.linux-amd64.tar.gz
+sudo mv go /usr/local
+
+4. 【設定go環境變數】
+vim ~/.bashrc
+設定環境變數，如下
+#GO VARIABLES
+export GOROOT=/usr/local/go
+export GOPATH=~/go
+export PATH=$PATH:$GOROOT/bin
+export PATH=$PATH:$GOPATH/bin
+#END GO VARIABLES
+
+生效及確認是否安裝成功
+source ~/.bashrc
+go version 顯示go version go1.11.5 linux/amd64表示安裝成功
+
+5. 【建立go的資料夾】
+cd ~
+mkdir go && cd go
+mkdir src pkg bin
+
+6. 【安裝curl】
+sudo apt-get install curl
+curl --version
+
+6. 【安裝docker】
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce
+
+6-1. 啟動、生效docker
+sudo service docker start
+sudo systemctl enable docker
+
+6-2. 將目前使用者加到docker group
+sudo usermod -aG docker ${USER}
+登出或重開機以生效
+
+7. 【安裝docker compose】
+sudo curl -L https://github.com/docker/compose/releases/download/1.17.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose -v
+
+8. 【安裝jq】
+sudo apt-get install jq
+
+9. 【下載hyperledger 1.4.1專案】
+cd ~/go
+mkdir -p src/github.com/hyperledger && cd ~/go/src/github.com/hyperledger
+
+下載下列兩的網址的檔案，解壓縮後移到~/go/src/github.com/hyperledger
+fabric 1.4.1: https://github.com/hyperledger/fabric/releases/tag/v1.4.1
+fabric sample 1.4.1: https://github.com/hyperledger/fabric-samples/releases/tag/v1.4.1
+
+下載hyperledger的images和binary檔
+curl -sSL http://bit.ly/2ysbOFE | bash -s -- 1.4.1 1.4.1 0.4.15
+
+10. 【移動binary檔】
+cd ~/go/src/github.com/hyperledger/fabric-samples/bin
+sudo mv configtxgen configtxlator cryptogen discover fabric-ca-client idemixgen orderer peer /usr/local/bin
+
+11. 【關閉使用swap】
+sudo swapoff -a
+
+
+
+
+
+

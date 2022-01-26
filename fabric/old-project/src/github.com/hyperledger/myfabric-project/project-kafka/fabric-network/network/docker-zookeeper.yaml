@@ -1,0 +1,51 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+
+# NOTE: This is not the way a Kafka cluster would normally be deployed in production, as it is not secure
+# and is not fault tolerant. This example is a toy deployment that is only meant to exercise the Kafka code path
+# of the ordering service.
+
+version: '2'
+
+services:
+  zookeeper0:
+    container_name: zookeeper0
+    hostname: zookeeper0
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - "2182:2181"
+      - "2888:2888"
+      - "3887:3888"
+
+  zookeeper1:
+    container_name: zookeeper1
+    hostname: zookeeper1
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=2
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - "2183:2181"
+      - "3888:2888"
+      - "3886:3888"
+
+  zookeeper2:
+    container_name: zookeeper2
+    hostname: zookeeper2
+    image: hyperledger/fabric-zookeeper
+    restart: always
+    environment:
+      - ZOO_MY_ID=3
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+    ports:
+      - "2184:2181"
+      - "4888:2888"
+      - "3885:3888"

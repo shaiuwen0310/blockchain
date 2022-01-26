@@ -1,0 +1,9 @@
+{
+	"network-configs": {
+		"blockchain-scanfile": {
+			"name": "blockchain-scanfile",
+			"profile": "./connection-profile/blockchain-scanfile.json"
+		}
+	},
+	"license": "Apache-2.0"
+}

@@ -1,0 +1,6 @@
+1. 調整fabric-pv.yaml
+nfs ip、容量大小
+path要跟NFS_SHARE_PATH一致
+
+1. 調整fabric-pvc.yaml
+容量與pv一致

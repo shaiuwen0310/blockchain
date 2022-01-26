@@ -1,0 +1,128 @@
+【專案說明】
+1. 整個啟動是單機版本
+2. 區塊鏈的共識可於營運使用
+3. 所有程式都使用docker運行，僅透過curl測試
+4. 區塊鏈網路設定為固定一個org，兩個peer，一個ca，無動態增加節點之功能
+5. 自動化啟動，即使每次啟動時的合約數量不同也不用新增shell
+6. 啟動區塊鏈順序為，《打包api服務》、《打包webui》、《啟動網路》、《啟動服務》、《啟動網頁畫面》、《發動交易》
+7. 關閉區塊鏈順序為，《關閉網頁畫面》、《關閉服務》、《關閉網路》、《清空網路及相關檔案》、《清空ID》
+
+【專案架構】
+.
+├── fabric-network   # 區塊鏈網路
+├── node-api-service # 四個node服務，一個nginx反代理
+├── ReadMe.txt       # 說明文件
+├── test             # curl測試
+└── webUI            # 網頁呈現區塊鏈操作
+
+【fabric-network架構】
+.
+├── chaincode    ###### 擺放合約的資料夾 ###############################################################
+│   ├── delta    # 儲存sensor數值加總的合約，表現tps大的做法
+│   ├── scanfile  # 儲存檔案hash值
+│   ├── mytokens # fabric token
+│   └── wine     # 儲存wine資訊的合約，表現各種區塊鏈存取資料功能
+└── network                     ###### 區塊鏈網路的資料夾，僅一個組織 ####################################
+    ├── channel-artifacts       # 放置generate.sh所產生的檔案
+    ├── clearup.sh              # 所有docker container都stop後，執行此shell刪除所有設定、憑證、walletID
+    ├── configtx.yaml           # 配置區塊鏈所需檔案，於generate.sh產生，名稱須固定
+    ├── crypto-config.yaml      # 配置每個節點所需的憑證，於generate.sh產生，不可變動crypto-config.yaml檔名
+    ├── docker-ca-template.yaml # docker-compose，org1的ca，於generate.sh會複製成docker-ca.yaml
+    ├── docker-cli.yaml         # docker-compose，連到org1 peer0的console，啟動後，可透過執行shell更改環境變數，來連到其他peer
+    ├── docker-couchdb.yaml     # docker-compose，peer的db
+    ├── docker-kafka.yaml       # docker-compose，orderer所使用的共識
+    ├── docker-orderer.yaml     # docker-compose，消息排序、數據塊接口，建立三個，使用上只須連上任一個，可替換
+    ├── docker-peer.yaml        # docker-compose，兩個peer，建立兩個，表示資料有一個備份，使用上只須連任一個，可作替換
+    ├── docker-zookeeper.yaml   # docker-compose，管理kafka
+    ├── down.sh                 # 關閉區塊鏈網路
+    ├── generate.sh             # 產生設定檔、憑證
+    ├── newCC.sh                # 在區塊鏈網路運行中新增一個合約
+    ├── scripts        ###### 透過cli container執行的動作 ###############################################
+    │   ├── channel.sh # script.sh中會用到的channel名稱
+    │   ├── comparm.sh # script.sh中會用到的參數
+    │   └── script.sh  # 使用start.sh呼叫，功用為新增channel，peer加入channel，安裝合約
+    ├── start.sh # 啟動區塊鏈網路
+    └── stop.sh  # 暫停區塊鏈網路
+《啟動網路》
+1. 第一次啟動網路，到安裝完成所有合約的動作
+./clearup.sh
+./generate.sh
+./start.sh
+2. 在同個channel中增加新合約，即為資料夾名稱
+./newCC.sh
+3. 增加新channel並安裝所有合約(撰寫後尚未測試過)
+./generate.sh -c 'channel名稱' -g
+./start.sh
+
+【node-api-service架構】
+.
+├── api-sevice         ###### 放所有api服務的資料夾 #################################################
+│   ├── delta-api      # delta合約操作的服務
+│   ├── scanfile-api    # scanfile合約操作的服務
+│   ├── id-api         # 增加identity的服務
+│   ├── mytokens-api   # fabric token合約操作的服務
+│   └── wine-api       # wine合約操作的服務
+├── delta-Dockerfile   ###### 打包delta-api成docker
+├── scanfile-Dockerfile ###### 打包scanfile-api成docker
+├── docker-api.yaml    ###### 開啟api及nginx服務
+├── gateway                 　          ###### 存放所有api共同使用的連線到區塊鏈的設定，任何交易都會使用到 #################
+│   └── networkConnection-template.yaml # IP為docker IP; docker port所以固定不變; orderer和peer可以替換(pm2要reload)
+├── id-Dockerfile       ###### 打包id-api成docker
+├── mytokens-Dockerfile ###### 打包mytokens-api成docker
+├── nginx.conf      ###### nginx設定檔，使用node.api.com:80反代理三台server
+├── process.yml     ###### pm2的設定檔，三個服務共同使用
+├── runApp.sh       ###### 啟動docker-api.yaml
+├── downApp.sh      ###### 關閉docker-api.yaml
+├── wallet          # 存放所有api共同使用的ID，任何交易都會使用到
+└── wine-Dockerfile ###### 打包wine-api成docker
+《打包api服務》
+1. 確認wallet為空，若有identity須先清空
+2. 打包wine api: 在wine-Dockerfile路徑下cmd: docker build -f wine-Dockerfile -t wine .
+3. 打包delta api: delta-Dockerfile路徑下cmd: docker build -f delta-Dockerfile -t delta .
+4. 打包id api: 在id-Dockerfile路徑下cmd: docker build -f id-Dockerfile -t id .
+5. 打包mytokens api: 在mytokens-Dockerfile路徑下cmd: docker build -f mytokens-Dockerfile -t mytokens .
+6. 打包scanfile api: 在scanfile-Dockerfile路徑下cmd: docker build -f scanfile-Dockerfile -t scanfile .
+
+《啟動服務》
+./runApp.sh，自動替換networkConnection.yaml中的node名稱及IP，再開啟服務
+
+【webUI】
+.
+├── docker-compose.yaml # docker-compose，啟動網頁程式
+├── fabric-tokens       # 網頁程式碼的資料夾
+│   ├── Dockerfile      # 打包網頁程式成docker image
+├── nginx.conf          # 覆蓋nginx設定檔，調整port號為4200
+├── runUI.sh            # 啟動docker-compose
+└── downUI.sh           # 關閉docker-compose
+《打包webui》
+在fabric-tokens目錄下cmd: docker build -f Dockerfile -t fabric-tokens .
+
+《啟動網頁畫面》
+在webUI目錄下
+./runUI.sh
+
+《發動交易》
+-- 1. 在/etc/hosts映射127.0.0.1 node.api.com --
+1. 發交易皆透過reverseproxy打到api service，使用nginx設定的ip及port 4003
+2. 發交易前先發建立admin和user1的交易: domain為127.0.0.1，會轉發到http://id:4002
+      注意nginx.conf中server IP是寫id container名稱，app.js中設定port 4002
+3. 若要發送wine api: domain同上，會轉發到http://wine:4000
+      注意nginx.conf中server IP是寫wine container名稱，app.js中設定port 4000
+4. 若要發送delta api: domain同上，會轉發到http://delta:4001
+      注意nginx.conf中server IP是寫delta container名稱，app.js中設定port 4001
+5. 若要發送mytokens api: domain同上，會轉發到http://mytokens:4006
+      注意nginx.conf中server IP是寫mytokens container名稱，app.js中設定port 4006
+6. 若要發送scanfile api: domain同上，會轉發到http://scanfile:4005
+      注意nginx.conf中server IP是寫scanfile container名稱，app.js中設定port 4005
+7. 可使用test/中的shell進行測試，mytokens則可使用webUI/fabric-tokens網頁測試
+
+【結束操作】
+《關閉網頁畫面》 暫停及清空網頁容器: ./downUI.sh
+《關閉服務》 刪除服務容器: ./downApp.sh
+《關閉網路》 刪除網路容器: ./down.sh
+《清空網路及相關檔案》 ./clearup.sh
+《清空ID》 sudo刪除wallet中的檔案 rm -rf *
+若只是暫停而非刪除區塊鏈網路，則不需要《清空ID》
+
+【注意】
+因與hdfs服務不同網段 dockerize的服務無法連接hdfs

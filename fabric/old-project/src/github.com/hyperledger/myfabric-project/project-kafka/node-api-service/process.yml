@@ -1,0 +1,13 @@
+apps:
+  - script   : ./api-service/wine-api/app.js
+    name     : wine
+    exec_mode: cluster
+    instances: 2
+  - script   : ./api-service/mytokens-api/app.js
+    name     : mytokens
+    exec_mode: cluster
+    instances: 2
+  - script   : ./api-service/scanfile-api/app.js
+    name     : scanfile
+    exec_mode: cluster
+    instances: 2

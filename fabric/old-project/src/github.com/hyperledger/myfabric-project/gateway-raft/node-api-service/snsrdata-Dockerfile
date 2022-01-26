@@ -1,0 +1,6 @@
+FROM node:8.16.0
+
+WORKDIR /src/api-service/snsrdata-api
+COPY /api-service/snsrdata-api /src/api-service/snsrdata-api
+RUN npm install --production \
+	&& npm install pm2 -g --no-optional --production

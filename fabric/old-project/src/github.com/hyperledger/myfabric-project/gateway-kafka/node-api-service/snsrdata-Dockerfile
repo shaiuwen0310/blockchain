@@ -1,0 +1,10 @@
+FROM node:9.0.0
+
+RUN mkdir -p /src/api-sevice/snsrdata-api \
+    && mkdir -p /src/wallet \
+    && mkdir -p /src/gateway
+
+WORKDIR  /src
+COPY /api-sevice/snsrdata-api /src/api-sevice/snsrdata-api
+COPY /wallet /src/wallet
+COPY /gateway /src/gateway

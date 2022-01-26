@@ -1,0 +1,9 @@
+[Unit]
+Description=run mytimer three minutes after booting
+
+[Timer]
+OnBootSec=3min
+Unit=iotdata.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+
+gateway-raft: 多orderer排序，使用byfn.sh修改，可新增新合約，目前合約僅提供給iot sensor使用
+
+gateway-kafka: 單一kafka排序，可新增新合約，目前合約僅提供給iot sensor使用
+
+project-kafka: 多kafka排序，可新增新合約，目前於ezserver2啟動

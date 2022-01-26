@@ -1,0 +1,30 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+
+# NOTE: This is not the way a Kafka cluster would normally be deployed in production, as it is not secure
+# and is not fault tolerant. This example is a toy deployment that is only meant to exercise the Kafka code path
+# of the ordering service.
+
+version: '2'
+
+services:
+  hfckafka0:
+    container_name: hfckafka0
+    hostname: hfckafka0
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_MIN_INSYNC_REPLICAS=1
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181
+      - KAFKA_MESSAGE_MAX_BYTES=1048576 # 1 * 1024 * 1024 B
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=1048576 # 1 * 1024 * 1024 B
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS=16000
+      - KAFKA_LOG_RETENTION_MS=-1
+    ports:
+      - "9092:9092"

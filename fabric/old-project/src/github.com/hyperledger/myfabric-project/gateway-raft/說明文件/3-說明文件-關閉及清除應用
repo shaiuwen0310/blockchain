@@ -1,0 +1,11 @@
+1. 【關閉api服務】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service
+./downApp.sh
+
+2. 【關閉api服務】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/fabric-network/network
+./down.sh
+
+3. 【刪除wallet id】
+cd ~/go/src/github.com/hyperledger/myfabric-project/gateway-raft/node-api-service/wallet
+root權限: rm -rf *

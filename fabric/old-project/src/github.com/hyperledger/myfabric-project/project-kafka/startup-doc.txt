@@ -1,0 +1,32 @@
+《打包api服務》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/node-api-service
+2. 確認./wallet沒有殘留資料
+3. 打包wine api: docker build -f wine-Dockerfile -t wine .
+4. 打包mytokens api: docker build -f mytokens-Dockerfile -t mytokens .
+5. 打包scanfile api: docker build -f scanfile-Dockerfile -t scanfile .
+
+《打包webui》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/webUI/fabric-tokens
+2. 打包fabric-tokens: docker build -f Dockerfile -t fabric-tokens .
+
+《啟動網路》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/fabric-network/network
+2. 第一次啟動網路，到安裝完成所有合約的動作
+./clearup.sh
+./generate.sh
+./start.sh
+3. 在同個channel中增加新合約，即為資料夾名稱
+./newCC.sh
+
+《啟動服務》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/node-api-service
+2. ./runApp.sh
+
+《啟動網頁畫面》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/webUI
+2. ./runUI.sh
+
+《建立walletID》
+1. cd ~/go/src/github.com/hyperledger/myfabric-project/project-kafka/test
+2. 分別將./id-testAPI.sh中的enrollAdmin和registerUser註解移除
+3. ./id-testAPI.sh

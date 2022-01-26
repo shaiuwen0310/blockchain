@@ -1,0 +1,41 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: example.com
+    Specs:
+      - Hostname: ORDERER_HOST
+        SANS:
+          - "ORDERER_SANS"
+      - Hostname: ORDERER2_HOST
+        SANS:
+          - "ORDERER2_SANS"
+      - Hostname: ORDERER3_HOST
+        SANS:
+          - "ORDERER3_SANS"
+      - Hostname: ORDERER4_HOST
+        SANS:
+          - "ORDERER4_SANS"
+      - Hostname: ORDERER5_HOST
+        SANS:
+          - "ORDERER5_SANS"
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+  - Name: Org1
+    Domain: org1.example.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: PEER0_HOST
+        SANS:
+          - "PEER0_SANS"
+      - Hostname: PEER1_HOST
+        SANS:
+          - "PEER1_SANS"
+    Users:
+      Count: 1
